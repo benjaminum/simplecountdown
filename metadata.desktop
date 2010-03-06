@@ -1,0 +1,17 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Simple Countdown
+Type=Service
+ServiceTypes=Plasma/Applet
+Icon=chronometer
+X-Plasma-API=python
+X-Plasma-MainScript=code/main.py
+X-KDE-PluginInfo-Author=Benjamin Ummenhofer
+X-KDE-PluginInfo-Email=benjaminum@gmail.com
+X-KDE-PluginInfo-Name=simple-countdown
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Website=http://plasma.kde.org/
+X-KDE-PluginInfo-Category=Date and Time
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
