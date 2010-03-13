@@ -55,7 +55,7 @@ class SimpleCountdown(plasmascript.Applet):
         self.layout.addItem(self.eventLabel)
         self.layout.addItem(self.timeLabel)
         self.applet.setLayout(self.layout)
-        self.resize(300, 85)
+        self.resize(375, 85)
 
         # Setup timer
         self.timer = QTimer()
@@ -88,7 +88,7 @@ class SimpleCountdown(plasmascript.Applet):
 
     def readConfig(self):
         cfg = self.config()
-        self.eventLabel.setText( cfg.readEntry('event',QString('event')).toString() )
+        self.eventLabel.setText( cfg.readEntry('event',QString('Event')).toString() )
         self.dateTime = cfg.readEntry('dateTime', QDateTime() ).toDateTime()
 
 
@@ -116,7 +116,10 @@ class SimpleCountdown(plasmascript.Applet):
 
            
     def setTimerInterval(self, secsToGo):
-        self.timer.setInterval(1000*60) # 60 seconds
+        if secsToGo < 60*60:
+           self.timer.setInterval(1000) # 60 seconds
+        else:
+           self.timer.setInterval(1000*60) # 60 seconds
 
 
 
@@ -152,13 +155,13 @@ class SimpleCountdown(plasmascript.Applet):
                  time_string += str(hours) + ' hour '
 
            if days == 0:
-              if minutes > 1 or minutes == 0:
+              if minutes > 1:
                  time_string += str(minutes) + ' minutes '
-              else:
+              elif minutes == 1 or (minutes == 0 and hours > 0):
                  time_string += str(minutes) + ' minute '
-
+              
            if days == 0 and hours == 0:
-              if seconds > 1:
+              if seconds > 1 or seconds == 0:
                  time_string += str(seconds) + ' secs '
               else:
                  time_string += str(seconds) + ' sec '
