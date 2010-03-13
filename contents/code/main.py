@@ -12,6 +12,8 @@ class SimpleCountdown(plasmascript.Applet):
     def __init__(self,parent,args=None):
         plasmascript.Applet.__init__(self,parent)
  
+
+
     def init(self):
         # General stuff
         self.setHasConfigurationInterface(True)
@@ -47,6 +49,7 @@ class SimpleCountdown(plasmascript.Applet):
         #dialog.exec_()
 
 
+
     def paintInterface(self, painter, option, rect):
         painter.save()
         #painter.setPen(Qt.white)
@@ -54,8 +57,9 @@ class SimpleCountdown(plasmascript.Applet):
         painter.restore()
 
 
+
     def showConfigurationInterface(self):
-        dialog = ConfigDialog()
+        dialog = ConfigDialog(self.eventLabel.text(), self.dateTime)
         if dialog.exec_() == 1:
            self.eventLabel.setText( dialog.eventEdit.text() )
            self.startCountDown( dialog.dateTimeEdit.dateTime() )
@@ -65,8 +69,9 @@ class SimpleCountdown(plasmascript.Applet):
 
     def readConfig(self):
         cfg = self.config()
-        cfg.readEntry('event',QString('event'))
-        cfg.readEntry('dateTime', QDateTime() )
+        self.eventLabel.setText( cfg.readEntry('event',QString('event')).toString() )
+        self.dateTime = cfg.readEntry('dateTime', QDateTime() ).toDateTime()
+
 
            
     def saveConfig(self):
@@ -89,15 +94,11 @@ class SimpleCountdown(plasmascript.Applet):
         self.timer.start()
         self.updateLabel()
 
+
            
     def setTimerInterval(self, secsToGo):
-        if secsToGo > 60*60*24:
-           self.timer.setInterval(1000*60)
-        elif secsToGo > 60*60:
-           self.timer.setInterval(1000*60*60)
-        else:
-           self.timer.setInterval(1000)
-        #self.timer.setInterval(1000)
+        self.timer.setInterval(1000*60) # 60 seconds
+
 
 
     def updateLabel(self):
@@ -126,13 +127,13 @@ class SimpleCountdown(plasmascript.Applet):
               time_string += str(days) + ' day '
 
            if days > 0 or hours > 0:
-              if hours > 1:
+              if hours > 1 or hours == 0:
                  time_string += str(hours) + ' hours '
               else:
                  time_string += str(hours) + ' hour '
 
            if days == 0:
-              if minutes > 1:
+              if minutes > 1 or minutes == 0:
                  time_string += str(minutes) + ' minutes '
               else:
                  time_string += str(minutes) + ' minute '
