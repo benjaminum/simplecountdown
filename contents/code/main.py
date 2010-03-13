@@ -62,10 +62,8 @@ class SimpleCountdown(plasmascript.Applet):
         self.timer.timeout.connect(self.updateLabel)
 
         self.readConfig()
+        self.startCountDown( self.dateTime )
 
-
-        #dialog = ConfigDialog()
-        #dialog.exec_()
 
 
 
