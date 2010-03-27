@@ -107,15 +107,15 @@ class SimpleCountdown(plasmascript.Applet):
 
         if eventDateTime.isValid() and seconds > 0:
            self.setTimerInterval(seconds)
-
-        self.timer.start()
+           self.timer.start()
+        
         self.updateLabel()
 
 
            
     def setTimerInterval(self, secsToGo):
         if secsToGo < 60*60:
-           self.timer.setInterval(1000) # 60 seconds
+           self.timer.setInterval(1000) # 1 second
         else:
            self.timer.setInterval(1000*60) # 60 seconds
 
