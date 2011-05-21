@@ -44,6 +44,9 @@ class SimpleCountdown(plasmascript.Applet):
         # Try long strings first
         self.shortStrings = False
 
+        # Show the countdown instead of the date
+        self.showDate = False
+
         # Add labels to the layout
         self.layout = QGraphicsLinearLayout(Qt.Vertical, self.applet)
         self.eventLabel = Plasma.Label(self.applet)
@@ -109,6 +112,11 @@ class SimpleCountdown(plasmascript.Applet):
         plasmascript.Applet.constraintsEvent(self, constraints)
 
 
+    def mousePressEvent(self,move):
+        self.showDate = not self.showDate
+        self.updateLabel()
+
+
     def computeFontSizeTable(self):
         self.fontSizeTable = []
         longestString = '   99 hours 99 minutes   '
@@ -126,27 +134,32 @@ class SimpleCountdown(plasmascript.Applet):
 
 
     def setLabelFonts(self):
+        '''Sets the font size for the event and the time and also sets the shortStrings option to true if necessary.'''
         i = 0
         width   = self.fontSizeTable[i][0]
         height  = self.fontSizeTable[i][1]
         pixSize = self.fontSizeTable[i][2]
         minPixSize = self.fontSizeTable[len(self.fontSizeTable)-1][2]
 
+        # how much space do we have?
         timeLabelWidth  = self.geometry().width() - self.getContentsMargins()[0] - self.getContentsMargins()[2]
         timeLabelHeight = self.geometry().height() // 2 - self.getContentsMargins()[1] - self.getContentsMargins()[3]
 
+        # choose largest possible pixSize
         while (width > timeLabelWidth or height > timeLabelHeight) and i < len(self.fontSizeTable):
               width   = self.fontSizeTable[i][0]
               height  = self.fontSizeTable[i][1]
               pixSize = self.fontSizeTable[i][2]
               i = i + 1
 
+        # string is still too large -> switch to short strings
         if i == len(self.fontSizeTable) and width > timeLabelWidth:
            self.shortStrings = True
         else:
            self.shortStrings = False
         self.updateLabel()
 
+        # set style sheets
         self.eventLabel.setStyleSheet('font-size:'+str(pixSize-4)+'px')
         self.timeLabel.setStyleSheet('font-size:'+str(pixSize)+'px; font-weight:bold')
 
@@ -203,64 +216,72 @@ class SimpleCountdown(plasmascript.Applet):
            seconds = now.secsTo(self.dateTime)
 
            if seconds < 0:
-              self.timeLabel.setText('Time is up!')
               self.timer.stop()
-              return
            else:
               self.setTimerInterval(seconds)
 
-           days = seconds // (60*60*24)
-           seconds -= days*60*60*24
-           hours = seconds // (60*60)
-           minutes = (seconds // 60) % 60
-           seconds = seconds % 60
 
-           if self.shortStrings == True:
-              days_str_pl = ' d '
-              days_str_sg = ' d '
-              hour_str_pl = ' h '
-              hour_str_sg = ' h '
-              min_str_pl  = ' m '
-              min_str_sg  = ' m '
-              sec_str_pl  = ' s '
-              sec_str_sg  = ' s '
-           else:
-              days_str_pl = ' days '
-              days_str_sg = ' day '
-              hour_str_pl = ' hours '
-              hour_str_sg = ' hour '
-              min_str_pl  = ' minutes '
-              min_str_sg  = ' minute '
-              sec_str_pl  = ' secs '
-              sec_str_sg  = ' sec '
-
-
-           time_string = ' '
-           if days > 1:
-              time_string += str(days) + days_str_pl
-           elif days > 0:
-              time_string += str(days) + days_str_sg
-
-           if days > 0 or hours > 0:
-              if hours > 1 or hours == 0:
-                 time_string += str(hours) + hour_str_pl
-              else:
-                 time_string += str(hours) + hour_str_sg
-
-           if days == 0:
-              if minutes > 1:
-                 time_string += str(minutes) + min_str_pl
-              elif minutes == 1 or (minutes == 0 and hours > 0):
-                 time_string += str(minutes) + min_str_sg
+           if self.showDate:
+               text = self.dateTime.toString('ddd ')
+               text += self.dateTime.toString(Qt.SystemLocaleShortDate)
+               self.timeLabel.setText( text )     
               
-           if days == 0 and hours == 0:
-              if seconds > 1 or seconds == 0:
-                 time_string += str(seconds) + sec_str_pl
-              else:
-                 time_string += str(seconds) + sec_str_sg
+           else:
+               if seconds < 0:
+                  self.timeLabel.setText('Time is up!')
+                  return
+
+               days = seconds // (60*60*24)
+               seconds -= days*60*60*24
+               hours = seconds // (60*60)
+               minutes = (seconds // 60) % 60
+               seconds = seconds % 60
+
+               if self.shortStrings == True:
+                  days_str_pl = ' d '
+                  days_str_sg = ' d '
+                  hour_str_pl = ' h '
+                  hour_str_sg = ' h '
+                  min_str_pl  = ' m '
+                  min_str_sg  = ' m '
+                  sec_str_pl  = ' s '
+                  sec_str_sg  = ' s '
+               else:
+                  days_str_pl = ' days '
+                  days_str_sg = ' day '
+                  hour_str_pl = ' hours '
+                  hour_str_sg = ' hour '
+                  min_str_pl  = ' minutes '
+                  min_str_sg  = ' minute '
+                  sec_str_pl  = ' secs '
+                  sec_str_sg  = ' sec '
 
 
-           self.timeLabel.setText(time_string)     
+               time_string = ' '
+               if days > 1:
+                  time_string += str(days) + days_str_pl
+               elif days > 0:
+                  time_string += str(days) + days_str_sg
+
+               if days > 0 or hours > 0:
+                  if hours > 1 or hours == 0:
+                     time_string += str(hours) + hour_str_pl
+                  else:
+                     time_string += str(hours) + hour_str_sg
+
+               if days == 0:
+                  if minutes > 1:
+                     time_string += str(minutes) + min_str_pl
+                  elif minutes == 1 or (minutes == 0 and hours > 0):
+                     time_string += str(minutes) + min_str_sg
+                  
+               if days == 0 and hours == 0:
+                  if seconds > 1 or seconds == 0:
+                     time_string += str(seconds) + sec_str_pl
+                  else:
+                     time_string += str(seconds) + sec_str_sg
+
+               self.timeLabel.setText(time_string)     
         else:
            self.update()
 
