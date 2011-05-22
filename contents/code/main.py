@@ -56,6 +56,9 @@ class SimpleCountdown(plasmascript.Applet):
         self.timeLabel.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.timeLabel.setText('Time remaining')
         
+        self.eventLabelFont = QFont()
+        self.timeLabelFont = QFont()
+        self.timeLabelFont.setBold(True)
 
         self.layout.addItem(self.eventLabel)
         self.layout.addItem(self.timeLabel)
@@ -160,8 +163,13 @@ class SimpleCountdown(plasmascript.Applet):
         self.updateLabel()
 
         # set style sheets
-        self.eventLabel.setStyleSheet('font-size:'+str(pixSize-4)+'px')
-        self.timeLabel.setStyleSheet('font-size:'+str(pixSize)+'px; font-weight:bold')
+        self.eventLabelFont.setPixelSize(pixSize-4)
+        self.timeLabelFont.setPixelSize(pixSize)
+
+        self.eventLabel.setFont(self.eventLabelFont)
+        self.timeLabel.setFont(self.timeLabelFont)
+
+        
 
 
 
